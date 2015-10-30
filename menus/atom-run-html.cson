@@ -10,7 +10,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'atom-run-html'
+      'label': 'Run HTML'
       'submenu': [
         {
           'label': 'Toggle'

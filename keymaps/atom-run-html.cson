@@ -8,4 +8,5 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
 'atom-workspace':
-  'ctrl-alt-o': 'atom-run-html:toggle'
+  'f5': 'atom-run-html:toggle'
+  'ctrl-shift-b': 'atom-run-html:toggle'
