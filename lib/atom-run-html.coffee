@@ -16,7 +16,8 @@ module.exports = AtomRunHtml =
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-run-html:toggle': => @toggle()
 
     # The express server
-    @server = null
+    @server = express()
+    @server.get '/', (req, res) -> res.send "Hello world"
 
   deactivate: ->
     @subscriptions.dispose()
@@ -25,19 +26,16 @@ module.exports = AtomRunHtml =
   serialize: ->
 
   toggle: ->
-    if @server
+    if @instance
       @stop()
     else
       @start()
 
   start: ->
     console.log "Starting server"
-    @server = express()
-    @server.get '/', (req, res) -> res.send "Hello world"
     @instance = @server.listen 3000
 
   stop: ->
     console.log "Closing server"
     @instance.close()
     @instance = null
-    @server = null
