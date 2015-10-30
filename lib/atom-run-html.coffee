@@ -10,26 +10,27 @@ module.exports = AtomRunHtml =
   atomRunHtmlView: null
   modalPanel: null
   subscriptions: null
+  currentProjectPath: null
 
   activate: (state) ->
+    self = this
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-run-html:toggle': => @toggle()
 
-    paths = atom.project.getPaths()
-    activeFilePath = atom.workspace.getActiveTextEditor().getPath()
-    pathToServe = atom.project.relativizePath(activeFilePath)[0]
-
-    console.log "Projects: ", paths
-    console.log "Active file: ", activeFilePath
-    console.log "Relativize path: ", pathToServe
-
-    # The express server
-    #indexPath = @projectToServe.fullPath
+    # Setting up server
     @server = express()
-    @server.use express.static pathToServe
+    @server.get '/*', (req, res) ->
+      filePath = req.originalUrl
+      console.log "Received request", filePath
+      console.log "currentProjectPath is", self.currentProjectPath
+      if self.currentProjectPath
+        fullPath = path.join self.currentProjectPath, filePath
+        res.sendFile fullPath
+      else
+        res.status(404).send('No project open')
 
   deactivate: ->
     @subscriptions.dispose()
@@ -41,13 +42,24 @@ module.exports = AtomRunHtml =
     if @instance
       @stop()
     else
+      console.log "Before start #{@currentProjectPath}"
       @start()
+      console.log "Started #{@currentProjectPath}"
 
   start: ->
     console.log "Starting server"
+    activeFilePath = atom.workspace
+      .getActiveTextEditor()
+      .getPath()
+    @currentProjectPath = atom.project
+      .relativizePath(activeFilePath)[0]
+
+    console.log "Serving #{@currentProjectPath}"
+
     @instance = @server.listen 3000
 
   stop: ->
     console.log "Closing server"
     @instance.close()
     @instance = null
+    @currentProjectPath = null
