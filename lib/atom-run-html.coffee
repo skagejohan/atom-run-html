@@ -1,5 +1,8 @@
 {allowUnsafeEval, allowUnsafeNewFunction} = require 'loophole'
 {CompositeDisposable} = require 'atom'
+fs = require 'fs'
+path = require 'path'
+
 express = allowUnsafeEval ->
   require 'express'
 
@@ -15,13 +18,39 @@ module.exports = AtomRunHtml =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-run-html:toggle': => @toggle()
 
+    paths = atom.project.getPaths()
+
+    console.log "Projects: ", paths
+    console.log "Active file: ", atom.workspace.getActiveTextEditor().getTitle()
+
+    #firstIndex = @findFirstIndex projectPath for projectPath in paths
+    existingIndexes = paths
+      .map @mapPaths
+      .filter (item) -> item.exists
+
+    @projectToServe = existingIndexes[0]
+
+    console.log 'First index: ', @projectToServe
+
     # The express server
+    indexPath = @projectToServe.fullPath
     @server = express()
-    @server.get '/', (req, res) -> res.send "Hello world"
+    @server.get '/', (req, res) -> res.sendFile indexPath
 
   deactivate: ->
     @subscriptions.dispose()
     @server = null
+
+  mapPaths: (projectPath) ->
+    console.log "Project path: ", projectPath
+    fullPath = path.join projectPath, 'index.html'
+    exists = fs.existsSync fullPath
+    console.log "Exists: ", exists
+    console.log "fullPath", fullPath
+    mapped =
+      projectPath: projectPath
+      fullPath: fullPath
+      exists: exists
 
   serialize: ->
 
