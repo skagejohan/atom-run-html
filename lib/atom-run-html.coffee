@@ -25,10 +25,10 @@ module.exports = AtomRunHtml =
     atomRunHtmlViewState: @atomRunHtmlView.serialize()
 
   toggle: ->
-    console.log 'AtomRunHtml was toggled!'
-    @count++
-
     if @modalPanel.isVisible()
       @modalPanel.hide()
     else
+      @atomRunHtmlView.count++
+      @atomRunHtmlView.update()
       @modalPanel.show()
+    console.log "AtomRunHtml was toggled! #{@atomRunHtmlView.count}"
