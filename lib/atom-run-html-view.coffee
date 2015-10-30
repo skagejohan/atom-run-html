@@ -15,10 +15,10 @@ class AtomRunHtmlView
     @element.classList.add('atom-run-html')
 
     # Create message element
-    @message = document.createElement('div')
-    @message.textContent = "The count is: #{@count}"
-    @message.classList.add('message')
-    @element.appendChild(@message)
+    message = document.createElement('div')
+    message.textContent = "The count is: #{@count}"
+    message.classList.add('message')
+    @element.appendChild(message)
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
@@ -31,9 +31,7 @@ class AtomRunHtmlView
   getElement: ->
     @element
 
-  update: ->
-    @message.remove()
-    @message = document.createElement('div')
-    @message.textContent = "The count is: #{@count}"
-    @message.classList.add('message')
-    @element.appendChild(@message)
+  incrementCount: ->
+    @count++
+    displayText = "The count is: #{@count}"
+    @element.children[0].textContent = displayText

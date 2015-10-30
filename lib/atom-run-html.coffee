@@ -28,7 +28,6 @@ module.exports = AtomRunHtml =
     if @modalPanel.isVisible()
       @modalPanel.hide()
     else
-      @atomRunHtmlView.count++
-      @atomRunHtmlView.update()
+      @atomRunHtmlView.incrementCount()
       @modalPanel.show()
     console.log "AtomRunHtml was toggled! #{@atomRunHtmlView.count}"
