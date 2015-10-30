@@ -26,6 +26,7 @@ module.exports = AtomRunHtml =
 
   toggle: ->
     console.log 'AtomRunHtml was toggled!'
+    @count++
 
     if @modalPanel.isVisible()
       @modalPanel.hide()
