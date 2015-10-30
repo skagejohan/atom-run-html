@@ -19,38 +19,21 @@ module.exports = AtomRunHtml =
     @subscriptions.add atom.commands.add 'atom-workspace', 'atom-run-html:toggle': => @toggle()
 
     paths = atom.project.getPaths()
+    activeFilePath = atom.workspace.getActiveTextEditor().getPath()
+    pathToServe = atom.project.relativizePath(activeFilePath)[0]
 
     console.log "Projects: ", paths
-    console.log "Active file: ", atom.workspace.getActiveTextEditor().getTitle()
-
-    #firstIndex = @findFirstIndex projectPath for projectPath in paths
-    existingIndexes = paths
-      .map @mapPaths
-      .filter (item) -> item.exists
-
-    @projectToServe = existingIndexes[0]
-
-    console.log 'First index: ', @projectToServe
+    console.log "Active file: ", activeFilePath
+    console.log "Relativize path: ", pathToServe
 
     # The express server
-    indexPath = @projectToServe.fullPath
+    #indexPath = @projectToServe.fullPath
     @server = express()
-    @server.get '/', (req, res) -> res.sendFile indexPath
+    @server.use express.static pathToServe
 
   deactivate: ->
     @subscriptions.dispose()
     @server = null
-
-  mapPaths: (projectPath) ->
-    console.log "Project path: ", projectPath
-    fullPath = path.join projectPath, 'index.html'
-    exists = fs.existsSync fullPath
-    console.log "Exists: ", exists
-    console.log "fullPath", fullPath
-    mapped =
-      projectPath: projectPath
-      fullPath: fullPath
-      exists: exists
 
   serialize: ->
 
