@@ -1,4 +1,3 @@
-AtomRunHtmlView = require './atom-run-html-view'
 {allowUnsafeEval, allowUnsafeNewFunction} = require 'loophole'
 {CompositeDisposable} = require 'atom'
 express = allowUnsafeEval ->
@@ -10,9 +9,6 @@ module.exports = AtomRunHtml =
   subscriptions: null
 
   activate: (state) ->
-    @atomRunHtmlView = new AtomRunHtmlView(state.atomRunHtmlViewState)
-    @modalPanel = atom.workspace.addModalPanel(item: @atomRunHtmlView.getElement(), visible: false)
-
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
@@ -23,25 +19,25 @@ module.exports = AtomRunHtml =
     @server = null
 
   deactivate: ->
-    @modalPanel.destroy()
     @subscriptions.dispose()
-    @atomRunHtmlView.destroy()
     @server = null
 
   serialize: ->
-    atomRunHtmlViewState: @atomRunHtmlView.serialize()
 
   toggle: ->
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
+    if @server
+      @stop()
     else
-      @atomRunHtmlView.incrementCount()
-      @modalPanel.show()
-    console.log "AtomRunHtml was toggled! #{@atomRunHtmlView.count}"
-    @run()
+      @start()
 
-  run: ->
-    unless @server
-      @server = express()
-      @server.get '/', (req, res) -> res.send "Hello world"
-      @server.listen 3000
+  start: ->
+    console.log "Starting server"
+    @server = express()
+    @server.get '/', (req, res) -> res.send "Hello world"
+    @instance = @server.listen 3000
+
+  stop: ->
+    console.log "Closing server"
+    @instance.close()
+    @instance = null
+    @server = null
