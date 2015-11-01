@@ -32,6 +32,4 @@ module.exports = AtomRunHtml =
         .getPath()
       @currentProjectPath = atom.project
         .relativizePath(activeFilePath)[0]
-      console.log "Before start #{@currentProjectPath}"
       @server.start(@currentProjectPath)
-      console.log "Started #{@currentProjectPath}"

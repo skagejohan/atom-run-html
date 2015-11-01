@@ -19,16 +19,13 @@ module.exports =
         options = {}
         filePath = req.originalUrl
         console.log "Received request", filePath
-        console.log "currentProjectPath is", self.currentProjectPath
         if self.currentProjectPath
           fullPath = path.join self.currentProjectPath, filePath
-          res.sendFile fullPath,
-            options,
-            (err) ->
-              if err
-                res.status(404).send('File not found')
-              else
-                console.log 'File sent: ', fullPath
+          res.sendFile fullPath, options, (err) ->
+            if err
+              res.status(404).send('File not found')
+            else
+              console.log 'File sent: ', fullPath
         else
           res.status(404).send('No project open')
 
